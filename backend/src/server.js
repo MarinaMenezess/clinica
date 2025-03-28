@@ -85,3 +85,56 @@ app.get('/api/consultas/listar', (req, res) => {
 app.listen(3000, () => {
   console.log('Servidor rodando na porta 3000');
 });
+
+// Função para listar todas as consultas de um paciente
+app.get('/api/consultas/paciente/:pacienteId', (req, res) => {
+  const pacienteId = req.params.pacienteId;
+  const query = 'SELECT * FROM consultas WHERE paciente_id = ? ORDER BY data_consulta DESC';
+  
+  connection.query(query, [pacienteId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erro ao buscar consultas' });
+    }
+    res.json(results);
+  });
+});
+
+// Rota para adicionar ou atualizar observações de uma consulta
+app.post('/api/consultas/observacoes', (req, res) => {
+  const { consultaId, observacoes } = req.body;
+  
+  const query = 'UPDATE consultas SET observacoes = ? WHERE id = ?';
+  connection.query(query, [observacoes, consultaId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erro ao salvar observações' });
+    }
+    res.json({ message: 'Observações atualizadas com sucesso!' });
+  });
+});
+
+// Rota para listar todos os exames agendados de um paciente
+app.get('/api/exames/paciente/:pacienteId', (req, res) => {
+  const pacienteId = req.params.pacienteId;
+  const query = 'SELECT * FROM exames WHERE paciente_id = ? ORDER BY data_exame DESC';
+
+  connection.query(query, [pacienteId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erro ao buscar exames' });
+    }
+    res.json(results);
+  });
+});
+
+// Rota para atualizar o resultado de um exame
+app.post('/api/exames/resultado', (req, res) => {
+  const { exameId, resultado } = req.body;
+  
+  const query = 'UPDATE exames SET resultado = ? WHERE id = ?';
+  connection.query(query, [resultado, exameId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erro ao atualizar resultado do exame' });
+    }
+    res.json({ message: 'Resultado do exame atualizado com sucesso!' });
+  });
+});
+
